@@ -1,5 +1,5 @@
 import React from 'react';
-import PContent from '../../text/PContent';
+import PContent from '../internal/text/PContent';
 import type { ProgressBarType, Section } from '../types/formTypeStructure';
 
 interface FormProgressBarProps {

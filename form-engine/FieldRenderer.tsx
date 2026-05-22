@@ -1,7 +1,7 @@
 import React from "react";
 import type { FormField, Section } from "./types/formTypeStructure";
 import { Eye, Edit, Plus, ArrowRight } from "lucide-react";
-import ValidationBtn from "../button/ValidationBtn";
+import ValidationBtn from "./internal/button/ValidationBtn";
 import ButtonTooltip from "./components/ButtonTooltip";
 
 

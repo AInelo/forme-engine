@@ -9,8 +9,8 @@ import { hasOTPField, getOTPField } from "../types/formUtils";
 import { useAutoOtherField } from "../hooks/useAutoOtherField";
 import { useDetailInfos, type DetailInfoGroup } from "../hooks/useDetailInfos";
 
-import H4Title from "../../text/H4Title";
-import PContent from "../../text/PContent";
+import H4Title from "../internal/text/H4Title";
+import PContent from "../internal/text/PContent";
 
 import type { FormField, Section, ResponseInForm, ContainerStyles } from "../types/formTypeStructure";
 

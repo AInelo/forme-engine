@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Trash2, AlertTriangle, X } from 'lucide-react';
-import CancelBtn from '../../button/CancelBtn';
-import ValidationBtn from '../../button/ValidationBtn';
+import CancelBtn from '../internal/button/CancelBtn';
+import ValidationBtn from '../internal/button/ValidationBtn';
 
 interface FormNavigationProps {
   onPrevious: () => void;

@@ -4,8 +4,8 @@ import { X, ExternalLink } from 'lucide-react';
 import OTPFormField from '../ui/special/OTPFormField';
 import type { FormField } from '../types/formTypeStructure';
 import type { OTPServerResponse } from '../hooks/useOTPHandler';
-import ValidationBtn from '../../button/ValidationBtn';
-import CancelBtn from '../../button/CancelBtn';
+import ValidationBtn from '../internal/button/ValidationBtn';
+import CancelBtn from '../internal/button/CancelBtn';
 
 interface OTPModalProps {
   isOpen: boolean;

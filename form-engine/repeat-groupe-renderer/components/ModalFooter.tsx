@@ -1,8 +1,8 @@
 import React from 'react';
 import { Save } from 'lucide-react';
-import ValidationBtn from '../../../button/ValidationBtn';
-import CancelBtn from '../../../button/CancelBtn';
-import Button from '../../../button/Button';
+import ValidationBtn from '../../internal/button/ValidationBtn';
+import CancelBtn from '../../internal/button/CancelBtn';
+import Button from '../../internal/button/Button';
 
 
 interface ModalFooterProps {

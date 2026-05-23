@@ -164,10 +164,7 @@ const OTPFormField: React.FC<OTPFormFieldProps> = ({
             onChange={(e) => handleChange(index, e.target.value)}
             onKeyDown={(e) => handleKeyDown(index, e)}
             onPaste={handlePaste}
-            className="w-12 h-12 text-center text-2xl font-bold border-2 border-teal-500 rounded-lg focus:border-teal-600 focus:ring-2 focus:ring-teal-200 outline-none transition-all"
-            style={{
-              color: "#008080",
-            }}
+            className="w-12 h-12 text-center text-2xl font-bold border-2 border-teal-500 rounded-lg text-teal-700 focus:border-teal-600 focus:ring-2 focus:ring-teal-200 outline-none transition-all bg-white"
             autoFocus={index === 0 && !otpValues.some(v => v)}
           />
         ))}

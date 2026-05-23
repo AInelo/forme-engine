@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { UploadCloud, Eye, Loader2, Trash2 } from "lucide-react";
-import classNames from "classnames";
+import { cn } from "../../lib/utils";
 
 import { FormFieldWrapper } from "../../FormFieldWrapper";
 import { SpecialField, type FormField } from "../../types/formTypeStructure";
@@ -190,7 +190,7 @@ const ImageFormField: React.FC<ImageFormFieldProps> = ({
         {/* Zone de drop */}
         {!uploadedImage && !localPreviewUrl && (
           <div
-            className={classNames(
+            className={cn(
               "relative border-2 border-dashed rounded-lg cursor-pointer transition-all duration-300 ease-in-out",
               dragActive
                 ? "border-teal-500 bg-teal-50 scale-[1.02]"
@@ -215,7 +215,7 @@ const ImageFormField: React.FC<ImageFormFieldProps> = ({
             <div className="p-8 text-center">
               <div className="flex flex-col items-center space-y-4">
                 <div
-                  className={classNames(
+                  className={cn(
                     "p-3 rounded-full transition",
                     dragActive
                       ? "bg-teal-600 text-white"

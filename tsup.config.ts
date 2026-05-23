@@ -8,6 +8,8 @@ export default defineConfig({
   clean: true,
   treeshake: true,
   splitting: false,
+  minify: true,
+  drop: ['console', 'debugger'],
   external: [
     'react',
     'react-dom',

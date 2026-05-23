@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { useFormNavigation } from "../../hooks/useFormNavigation";
 import type { FormEngineProps } from "./types/formEngine.types";
+import { FormThemeProvider, deriveThemeVars, DEFAULT_PRIMARY } from "../../context/FormThemeContext";
 import { extractAllFields } from "../../types/formUtils";
 import { useFormPersistence, useFormStore } from "../../store/useFormStore";
 import { createZodSchema } from "../../types/validation";
@@ -143,12 +144,17 @@ const FormEngine: React.FC<FormEngineProps> = ({
 
   const { handleClearAll } = useFormReset(methods, allFields, formId, navigation);
 
+  const primaryColor = form.theme?.primaryColor ?? DEFAULT_PRIMARY;
+  const themeVars = deriveThemeVars(primaryColor);
+
   return (
+    <FormThemeProvider primaryColor={primaryColor}>
     <FormProvider {...methods}>
       <form
-        key={formKey} // 🔥 Utiliser la clé unique pour forcer le re-rendu
+        key={formKey}
         onSubmit={(e) => e.preventDefault()}
         className="h-full w-full laptop:w-[90%] flex flex-col items-center justify-center bg-white"
+        style={themeVars}
       >
         <FormEngineContent
           form={form}
@@ -170,6 +176,7 @@ const FormEngine: React.FC<FormEngineProps> = ({
         />
       </form>
     </FormProvider>
+    </FormThemeProvider>
   );
 };
 

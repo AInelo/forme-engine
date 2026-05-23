@@ -4,6 +4,7 @@ export { default as FormEngine } from './components/core/FormEngine';
 // Types structurels du formulaire
 export type {
   FormStructure,
+  FormTheme,
   FormField,
   Section,
   FormRepeatGroup,

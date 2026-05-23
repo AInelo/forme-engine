@@ -21,11 +21,14 @@ const FormHeader: React.FC<FormHeaderProps> = ({ form, currentLang, headerOption
 
   // Header par défaut (comportement actuel)
   return (
-    <div className="mb-8 p-6 bg-primary text-white rounded-lg shadow-lg w-full max-w-4xl">
+    <div
+      className="mb-8 p-6 text-white rounded-lg shadow-lg w-full max-w-4xl"
+      style={{ backgroundColor: "var(--fe-primary)" }}
+    >
       <h1 className="text-3xl font-bold mb-2">
         {getLocalizedText(form.name, currentLang)}
       </h1>
-      <p className="text-blue-100 mb-2">
+      <p className="text-white/80 mb-2">
         {getLocalizedText(form.description, currentLang)}
       </p>
       <div className="flex flex-wrap gap-4 text-sm">

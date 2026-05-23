@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { Mic, MicOff, Play, Pause, Loader2, Trash2 } from "lucide-react";
-import classNames from "classnames";
+import { cn } from "../../lib/utils";
 
 import { FormFieldWrapper } from "../../FormFieldWrapper";
 import type { FormField } from "../../types/formTypeStructure";
@@ -244,7 +244,7 @@ const VoiceFormField: React.FC<VoiceFormFieldProps> = ({
       <div className="space-y-4">
         {!audioUrl && (
           <div
-            className={classNames(
+            className={cn(
               "relative border-2 border-dashed rounded-lg cursor-pointer transition-all duration-300 ease-in-out",
               isRecording
                 ? "border-red-500 bg-red-50"
@@ -257,7 +257,7 @@ const VoiceFormField: React.FC<VoiceFormFieldProps> = ({
                 <button
                   type="button"
                   onClick={isRecording ? stopRecording : startRecording}
-                  className={classNames(
+                  className={cn(
                     "p-4 rounded-full transition-all duration-300",
                     isRecording
                       ? "bg-red-600 text-white animate-pulse"

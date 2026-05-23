@@ -1,187 +1,62 @@
-
-// // components/atoms/formfield/ui/PasswordFormField.tsx
-import React from "react";
-import ClassNames from "classnames";
+import React, { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+import { FormFieldWrapper, getLocalizedText } from "../FormFieldWrapper";
+import { Input } from "../components/ui/input";
 import type { FormField } from "../types/formTypeStructure";
-import { baseClasses } from "../constants/FieldDesignWrapper";
-
-import { 
-    useResponsiveSize, 
-    getLocalizedText, 
-    FormFieldWrapper 
-} from "../FormFieldWrapper";
 import { useFormContext } from "react-hook-form";
 
 interface PasswordFormField extends FormField {
-    fieldType: "password";
+  fieldType: "password";
 }
 
 interface PasswordFormFieldProps {
-    field: PasswordFormField;
-    name?: string;
-    currentLang?: string;
-    defaultValue?: string;
-    className?: string;
+  field: PasswordFormField;
+  name?: string;
+  currentLang?: string;
+  defaultValue?: string;
+  className?: string;
 }
 
 const PasswordFormField: React.FC<PasswordFormFieldProps> = ({
-    field,
-    name,
-    defaultValue,
-    currentLang = 'fr',
-    className
+  field,
+  name,
+  defaultValue,
+  currentLang = "fr",
+  className,
 }) => {
-    const size = useResponsiveSize();
-    const { register, setValue } = useFormContext();
-    const placeholder = getLocalizedText(field.placeholder, currentLang);
+  const { setValue, watch } = useFormContext();
+  const [showPassword, setShowPassword] = useState(false);
+  const placeholder = getLocalizedText(field.placeholder, currentLang);
+  const fieldName = name ?? field.fieldName.toString();
 
-    const inputStyles = {
-        width: `${size.width}px`,
-        height: `${size.height}px`,
-        borderRadius: `${size.borderRadius}px`,
-    };
+  const currentValue = watch(fieldName) ?? defaultValue ?? "";
 
-    // On récupère la ref et l'on crée un onChange qui appelle le handler original puis setValue
-    const { ref, onChange: originalOnChange, ...restRegister } = register(name ?? field.fieldName.toString());
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(fieldName, e.target.value, { shouldValidate: true, shouldTouch: true });
+  };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        originalOnChange(e);
-        setValue(name ?? field.fieldName.toString(), e.target.value, {
-            shouldValidate: true,
-            shouldTouch: true,
-        });
-    };
-
-    return (
-        <FormFieldWrapper field={field} currentLang={currentLang}>
-            <input
-                type="password"
-                placeholder={placeholder}
-                {...restRegister}
-                ref={ref}
-                onChange={handleChange}
-                defaultValue={defaultValue}
-                className={ClassNames(baseClasses, className)}
-                style={{
-                    ...inputStyles,
-                    border: '1.5px solid #008080',
-                    outlineColor: '#008080',
-                    color: '#008080',
-                    backgroundColor: '#f7fafb',
-                    transition: 'border-color 0.2s',
-                }}
-            />
-        </FormFieldWrapper>
-    );
+  return (
+    <FormFieldWrapper field={field} currentLang={currentLang}>
+      <div className="relative">
+        <Input
+          type={showPassword ? "text" : "password"}
+          name={fieldName}
+          value={currentValue}
+          placeholder={placeholder}
+          onChange={handleChange}
+          className={className}
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword((v) => !v)}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+          tabIndex={-1}
+        >
+          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+        </button>
+      </div>
+    </FormFieldWrapper>
+  );
 };
 
 export default PasswordFormField;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// import React from "react";
-// import ClassNames from "classnames";
-// import type { FormField } from "../types/formTypeStructure";
-// import {baseClasses} from "../constants/FieldDesignWrapper";
-
-
-// import { 
-//     useResponsiveSize, 
-//     getLocalizedText, 
-//     FormFieldWrapper 
-// } from "../FormFieldWrapper";
-// import { useFormContext } from "react-hook-form";
-
-// interface PasswordFormField extends FormField {
-//     fieldType: "password"
-// }
-
-// interface PasswordFormFieldProps {
-//     field: PasswordFormField;
-//     name?: string; // Ajout pour permettre la personnalisation du nom du champ
-//     currentLang?: string;
-//     defaultValue?: string;
-//     className?: string;
-// }
-
-// const PasswordFormField: React.FC<PasswordFormFieldProps> = ({
-//     field,
-//     name,
-//     defaultValue,
-//     currentLang = 'fr',
-//     className
-// }) => {
-//     const size = useResponsiveSize();
-//     const { register } = useFormContext();
-//     const placeholder = getLocalizedText(field.placeholder, currentLang);
-
-//     const inputStyles = {
-//         width: `${size.width}px`,
-//         height: `${size.height}px`,
-//         borderRadius: `${size.borderRadius}px`,
-//     };
-
-//     return (
-//         <FormFieldWrapper field={field} currentLang={currentLang}>
-//             <input
-//                 type="password"
-//                 placeholder={placeholder}
-//                                 {...register(name ?? field.fieldName.toString())} // ✅ ICI
-
-//                 // {...register(name ?? field.formFieldId.toString())} // ✅ ICI
-                
-//                 defaultValue={defaultValue} // ✅ ICI
-//                 className={ClassNames(baseClasses, className)}
-//                 style={{
-//                     ...inputStyles,
-//                     border: '1.5px solid #008080',
-//                     outlineColor: '#008080',
-//                     color: '#008080',
-//                     backgroundColor: '#f7fafb',
-//                     transition: 'border-color 0.2s',
-//                 }}
-//             />
-//         </FormFieldWrapper>
-//     );
-// };
-
-// export default PasswordFormField;

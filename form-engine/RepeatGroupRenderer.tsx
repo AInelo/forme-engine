@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useFormContext } from "react-hook-form";
-import { gsap } from "gsap";
 import { X, Eye, Edit, Save, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import FieldRenderer from "./FieldRenderer";
 import type { FormField } from "./types/formTypeStructure";
@@ -78,34 +77,25 @@ const RepeatGroupRenderer: React.FC<RepeatGroupRendererProps> = ({
       
       // Animation de fermeture
       if (seriesElement) {
-        gsap.to(seriesElement, {
-          height: 0,
-          opacity: 0,
-          duration: 0.3,
-          ease: "power2.inOut",
-          onComplete: () => {
-            setExpandedSeries(newExpanded);
-          }
-        });
+        const h = seriesElement.scrollHeight;
+        const anim = seriesElement.animate(
+          [{ height: `${h}px`, opacity: '1' }, { height: '0px', opacity: '0' }],
+          { duration: 300, easing: 'ease-in-out', fill: 'forwards' }
+        );
+        anim.onfinish = () => setExpandedSeries(newExpanded);
       }
     } else {
       // Ouvrir la série
       newExpanded.add(index);
       setExpandedSeries(newExpanded);
-      
-      // Animation d'ouverture
+
       if (seriesElement) {
-        gsap.set(seriesElement, { height: "auto", opacity: 1 });
-        const autoHeight = seriesElement.scrollHeight;
-        gsap.fromTo(seriesElement, 
-          { height: 0, opacity: 0 },
-          { 
-            height: autoHeight, 
-            opacity: 1,
-            duration: 0.3,
-            ease: "power2.out"
-          }
+        const targetHeight = seriesElement.scrollHeight;
+        const anim = seriesElement.animate(
+          [{ height: '0px', opacity: '0' }, { height: `${targetHeight}px`, opacity: '1' }],
+          { duration: 300, easing: 'ease-out', fill: 'forwards' }
         );
+        anim.onfinish = () => { seriesElement.style.height = 'auto'; };
       }
     }
   };
@@ -113,36 +103,29 @@ const RepeatGroupRenderer: React.FC<RepeatGroupRendererProps> = ({
   const expandAll = () => {
     const allIndices = Array.from({ length: basedOnValue }, (_, i) => i);
     setExpandedSeries(new Set(allIndices));
-    
-    // Animer toutes les séries fermées
-    allIndices.forEach(index => {
-      const seriesElement = seriesRefs.current[index];
-      if (seriesElement && !expandedSeries.has(index)) {
-        gsap.set(seriesElement, { height: "auto", opacity: 1 });
-        const autoHeight = seriesElement.scrollHeight;
-        gsap.fromTo(seriesElement, 
-          { height: 0, opacity: 0 },
-          { 
-            height: autoHeight, 
-            opacity: 1,
-            duration: 0.3,
-            ease: "power2.out"
-          }
+
+    allIndices.forEach((index, i) => {
+      const el = seriesRefs.current[index];
+      if (el && !expandedSeries.has(index)) {
+        const targetHeight = el.scrollHeight;
+        const anim = el.animate(
+          [{ height: '0px', opacity: '0' }, { height: `${targetHeight}px`, opacity: '1' }],
+          { duration: 300, delay: i * 100, easing: 'ease-out', fill: 'forwards' }
         );
+        anim.onfinish = () => { el.style.height = 'auto'; };
       }
     });
   };
 
   const collapseAll = () => {
-    expandedSeries.forEach(index => {
-      const seriesElement = seriesRefs.current[index];
-      if (seriesElement) {
-        gsap.to(seriesElement, {
-          height: 0,
-          opacity: 0,
-          duration: 0.3,
-          ease: "power2.inOut"
-        });
+    expandedSeries.forEach((index, i) => {
+      const el = seriesRefs.current[index];
+      if (el) {
+        const h = el.scrollHeight;
+        el.animate(
+          [{ height: `${h}px`, opacity: '1' }, { height: '0px', opacity: '0' }],
+          { duration: 300, delay: i * 100, easing: 'ease-in-out', fill: 'forwards' }
+        );
       }
     });
     setExpandedSeries(new Set());
@@ -151,52 +134,41 @@ const RepeatGroupRenderer: React.FC<RepeatGroupRendererProps> = ({
   const openModal = (viewMode: boolean = false) => {
     setIsViewMode(viewMode);
     setIsModalOpen(true);
-    
-    // Animation d'ouverture plus rapide avec GSAP
-    gsap.set(modalRef.current, { display: "flex" });
-    gsap.set(overlayRef.current, { opacity: 0 });
-    gsap.set(contentRef.current, { scale: 0.9, opacity: 0, y: 20 });
-    
-    const tl = gsap.timeline();
-    tl.to(overlayRef.current, { 
-      opacity: 1, 
-      duration: 0.15, 
-      ease: "power2.out" 
-    })
-    .to(contentRef.current, { 
-      scale: 1, 
-      opacity: 1, 
-      y: 0, 
-      duration: 0.2, 
-      ease: "power2.out" 
-    }, "-=0.05");
+
+    if (overlayRef.current && contentRef.current) {
+      overlayRef.current.animate(
+        [{ opacity: '0' }, { opacity: '1' }],
+        { duration: 150, easing: 'ease-out', fill: 'forwards' }
+      );
+      contentRef.current.animate(
+        [
+          { opacity: '0', transform: 'scale(0.9) translateY(20px)' },
+          { opacity: '1', transform: 'scale(1) translateY(0px)' },
+        ],
+        { duration: 200, delay: 50, easing: 'ease-out', fill: 'forwards' }
+      );
+    }
   };
 
   const closeModal = () => {
-    if (!modalRef.current) return;
-    
-    // Animation de fermeture plus rapide avec GSAP
-    const tl = gsap.timeline({
-      onComplete: () => {
-        setIsModalOpen(false);
-        setIsViewMode(false);
-        setExpandedSeries(new Set());
-      }
-    });
-    
-    tl.to(contentRef.current, { 
-      scale: 0.9, 
-      opacity: 0, 
-      y: 20, 
-      duration: 0.15, 
-      ease: "power2.in" 
-    })
-    .to(overlayRef.current, { 
-      opacity: 0, 
-      duration: 0.1, 
-      ease: "power2.in" 
-    }, "-=0.05")
-    .set(modalRef.current, { display: "none" });
+    if (!contentRef.current || !overlayRef.current) return;
+
+    const contentAnim = contentRef.current.animate(
+      [
+        { opacity: '1', transform: 'scale(1) translateY(0px)' },
+        { opacity: '0', transform: 'scale(0.9) translateY(20px)' },
+      ],
+      { duration: 150, easing: 'ease-in', fill: 'forwards' }
+    );
+    overlayRef.current.animate(
+      [{ opacity: '1' }, { opacity: '0' }],
+      { duration: 100, delay: 50, easing: 'ease-in', fill: 'forwards' }
+    );
+    contentAnim.onfinish = () => {
+      setIsModalOpen(false);
+      setIsViewMode(false);
+      setExpandedSeries(new Set());
+    };
   };
 
   const openEdit = () => {

@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { gsap } from 'gsap';
 import toast from 'react-hot-toast';
 import OTPModal from './OTPModal';
 import { useOTPHandler } from '../hooks/useOTPHandler';

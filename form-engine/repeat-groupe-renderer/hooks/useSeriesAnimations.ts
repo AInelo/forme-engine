@@ -1,82 +1,73 @@
 import { useRef, useCallback } from 'react';
-import { gsap } from 'gsap';
 
 export const useSeriesAnimations = (expandedSeries: Set<number>, basedOnValue: number) => {
   const seriesRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   const animateSeriesToggle = useCallback((index: number, isExpanding: boolean) => {
-    const seriesElement = seriesRefs.current[index];
-    if (!seriesElement) return;
+    const el = seriesRefs.current[index];
+    if (!el) return;
 
-    // Optimisation : Animation plus légère sur mobile
-    const isMobile = window.innerWidth < 768;
-    const duration = isMobile ? 0.2 : 0.3;
+    const duration = window.innerWidth < 768 ? 200 : 300;
 
     if (isExpanding) {
-      gsap.set(seriesElement, { height: "auto", opacity: 1 });
-      const autoHeight = seriesElement.scrollHeight;
-      gsap.fromTo(seriesElement, 
-        { height: 0, opacity: 0 },
-        { 
-          height: autoHeight, 
-          opacity: 1,
-          duration,
-          ease: "power2.out"
-        }
+      const targetHeight = el.scrollHeight;
+      const anim = el.animate(
+        [
+          { height: '0px', opacity: '0' },
+          { height: `${targetHeight}px`, opacity: '1' },
+        ],
+        { duration, easing: 'ease-out', fill: 'forwards' }
       );
+      anim.onfinish = () => { el.style.height = 'auto'; };
     } else {
-      gsap.to(seriesElement, {
-        height: 0,
-        opacity: 0,
-        duration,
-        ease: "power2.inOut"
-      });
+      const currentHeight = el.scrollHeight;
+      el.animate(
+        [
+          { height: `${currentHeight}px`, opacity: '1' },
+          { height: '0px', opacity: '0' },
+        ],
+        { duration, easing: 'ease-in-out', fill: 'forwards' }
+      );
     }
   }, []);
 
   const animateExpandAll = useCallback(() => {
-    const allIndices = Array.from({ length: basedOnValue }, (_, i) => i);
     const isMobile = window.innerWidth < 768;
-    const duration = isMobile ? 0.15 : 0.3;
-    const stagger = isMobile ? 0.05 : 0.1;
+    const duration = isMobile ? 150 : 300;
+    const stagger = isMobile ? 50 : 100;
 
-    // Optimisation : Animation en lot pour éviter le blocage
-    allIndices.forEach((index, i) => {
-      const seriesElement = seriesRefs.current[index];
-      if (seriesElement && !expandedSeries.has(index)) {
-        gsap.set(seriesElement, { height: "auto", opacity: 1 });
-        const autoHeight = seriesElement.scrollHeight;
-        
-        gsap.fromTo(seriesElement, 
-          { height: 0, opacity: 0 },
-          { 
-            height: autoHeight, 
-            opacity: 1,
-            duration,
-            delay: i * stagger,
-            ease: "power2.out"
-          }
+    Array.from({ length: basedOnValue }, (_, i) => i).forEach((index, i) => {
+      const el = seriesRefs.current[index];
+      if (el && !expandedSeries.has(index)) {
+        const targetHeight = el.scrollHeight;
+        const anim = el.animate(
+          [
+            { height: '0px', opacity: '0' },
+            { height: `${targetHeight}px`, opacity: '1' },
+          ],
+          { duration, delay: i * stagger, easing: 'ease-out', fill: 'forwards' }
         );
+        anim.onfinish = () => { el.style.height = 'auto'; };
       }
     });
   }, [basedOnValue, expandedSeries]);
 
   const animateCollapseAll = useCallback(() => {
     const isMobile = window.innerWidth < 768;
-    const duration = isMobile ? 0.15 : 0.3;
-    const stagger = isMobile ? 0.05 : 0.1;
+    const duration = isMobile ? 150 : 300;
+    const stagger = isMobile ? 50 : 100;
 
-    // Optimisation : Animation en lot pour éviter le blocage
     expandedSeries.forEach((index, i) => {
-      const seriesElement = seriesRefs.current[index];
-      if (seriesElement) {
-        gsap.to(seriesElement, {
-          height: 0,
-          opacity: 0,
-          duration,
-          delay: i * stagger,
-          ease: "power2.inOut"
-        });
+      const el = seriesRefs.current[index];
+      if (el) {
+        const currentHeight = el.scrollHeight;
+        el.animate(
+          [
+            { height: `${currentHeight}px`, opacity: '1' },
+            { height: '0px', opacity: '0' },
+          ],
+          { duration, delay: i * stagger, easing: 'ease-in-out', fill: 'forwards' }
+        );
       }
     });
   }, [expandedSeries]);
@@ -85,6 +76,6 @@ export const useSeriesAnimations = (expandedSeries: Set<number>, basedOnValue: n
     seriesRefs,
     animateSeriesToggle,
     animateExpandAll,
-    animateCollapseAll
+    animateCollapseAll,
   };
 };

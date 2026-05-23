@@ -1,5 +1,4 @@
 import React from 'react';
-import { gsap } from 'gsap';
 import { X, ExternalLink } from 'lucide-react';
 import OTPFormField from '../ui/special/OTPFormField';
 import type { FormField } from '../types/formTypeStructure';
@@ -56,24 +55,18 @@ const OTPModal: React.FC<OTPModalProps> = ({
 
   // Animation d'ouverture
   React.useEffect(() => {
-    if (isOpen && modalRef.current) {
-      gsap.set(modalRef.current, { display: "flex" });
-      gsap.set(overlayRef.current, { opacity: 0 });
-      gsap.set(contentRef.current, { scale: 0.9, opacity: 0, y: 20 });
-      
-      const tl = gsap.timeline();
-      tl.to(overlayRef.current, { 
-        opacity: 1, 
-        duration: 0.15, 
-        ease: "power2.out" 
-      })
-      .to(contentRef.current, { 
-        scale: 1, 
-        opacity: 1, 
-        y: 0, 
-        duration: 0.2, 
-        ease: "power2.out" 
-      }, "-=0.05");
+    if (isOpen && overlayRef.current && contentRef.current) {
+      overlayRef.current.animate(
+        [{ opacity: '0' }, { opacity: '1' }],
+        { duration: 150, easing: 'ease-out', fill: 'forwards' }
+      );
+      contentRef.current.animate(
+        [
+          { opacity: '0', transform: 'scale(0.9) translateY(20px)' },
+          { opacity: '1', transform: 'scale(1) translateY(0px)' },
+        ],
+        { duration: 200, delay: 50, easing: 'ease-out', fill: 'forwards' }
+      );
     }
   }, [isOpen]);
 

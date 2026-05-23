@@ -522,6 +522,10 @@ export interface Section {
  * @property updatedAt - (Optional) The ISO date when the form was last updated.
  * @property sections - The sections that compose the form.
  */
+export interface FormTheme {
+    primaryColor?: string; // Code hex de la couleur principale, ex: "#008080"
+}
+
 export interface FormStructure {
     name: string;                         // Nom du formulaire
     provider: string;                     // Auteur / fournisseur
@@ -533,6 +537,7 @@ export interface FormStructure {
     createdAt?: string;                   // Date de création (ISO)
     updatedAt?: string;                   // Date de mise à jour (ISO)
     sections: Section[];                  // Sections composant le formulaire
+    theme?: FormTheme;                    // Thème visuel (couleur principale)
     layoutOptions?: FormEngineLayoutOptions; // Options de layout et pagination du formulaire
 }
 // =============================================

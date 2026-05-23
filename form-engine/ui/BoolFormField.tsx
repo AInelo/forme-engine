@@ -1,11 +1,9 @@
 import React from "react";
-import {
-  getLocalizedText,
-  FormFieldWrapper,
-} from "../FormFieldWrapper";
+import { FormFieldWrapper, getLocalizedText } from "../FormFieldWrapper";
+import { Switch } from "../components/ui/switch";
+import { Label } from "../components/ui/label";
 import type { FormField } from "../types/formTypeStructure";
 import { useFormContext } from "react-hook-form";
-
 
 interface BoolFormField extends FormField {
   fieldType: "bool";
@@ -22,42 +20,35 @@ interface BoolFormFieldProps {
 const BoolFormField: React.FC<BoolFormFieldProps> = ({
   field,
   name,
-  defaultValue,
   currentLang = "fr",
   className = "",
 }) => {
-  const { register, setValue, watch } = useFormContext();
-
+  const { setValue, watch } = useFormContext();
   const fieldName = name ?? field.fieldName.toString();
   const label = getLocalizedText(field.label, currentLang);
-  const isRequired = field.validations?.some(v => v.validationType === "required");
-
+  const isRequired = field.validations?.some((v) => v.validationType === "required");
   const currentValue = Boolean(watch(fieldName));
-
-  // 👇 Important : pour récupérer onChange RHF
-  const { onChange: fieldOnChange, ...rest } = register(fieldName);
+  const switchId = `switch-${fieldName}`;
 
   return (
     <FormFieldWrapper field={field} currentLang={currentLang} showLabel={false}>
-      <label className={`flex items-center gap-2 cursor-pointer ${className}`}>
-        <input
-          type="checkbox"
-          {...rest} // le reste des props de register
-          checked={currentValue}
-          onChange={(e) => {
-            fieldOnChange(e); // RHF update
-            setValue(fieldName, e.target.checked, {
-              shouldValidate: true,
-              shouldTouch: true,
-            });
-          }}
-          className="accent-[#008080] focus:ring-2 focus:ring-[#008080] border-[#008080] w-5 h-5"
-        />
-        <span className="text-[#008080] font-medium">
+      <div
+        className={`flex items-center justify-between rounded-lg border border-slate-200 bg-white px-4 py-3 transition-colors ${
+          currentValue ? "border-teal-200 bg-teal-50/30" : ""
+        } ${className}`}
+      >
+        <Label htmlFor={switchId} className="cursor-pointer font-medium text-slate-700 flex-1 pr-4">
           {label}
           {isRequired && <span className="text-red-500 ml-1">*</span>}
-        </span>
-      </label>
+        </Label>
+        <Switch
+          id={switchId}
+          checked={currentValue}
+          onCheckedChange={(checked) =>
+            setValue(fieldName, checked, { shouldValidate: true, shouldTouch: true })
+          }
+        />
+      </div>
     </FormFieldWrapper>
   );
 };

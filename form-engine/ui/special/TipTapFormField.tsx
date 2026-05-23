@@ -105,9 +105,9 @@ const TipTapFormField: React.FC<TipTapFormFieldProps> = ({
 
   return (
     <FormFieldWrapper field={field} currentLang={currentLang}>
-      <div className={`border-2 border-gray-300 rounded-lg overflow-hidden ${className || ''}`}>
+      <div className={`border border-slate-200 rounded-lg overflow-hidden shadow-sm ${className || ''}`}>
         {/* Toolbar */}
-        <div className="border-b border-gray-200 bg-gray-50 p-2 flex flex-wrap items-center gap-1">
+        <div className="border-b border-slate-100 bg-slate-50 p-2 flex flex-wrap items-center gap-0.5">
           {/* Texte gras */}
           <button
             type="button"

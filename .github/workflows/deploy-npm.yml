@@ -1,0 +1,39 @@
+name: Deploy — Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish:
+    name: Build & Publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build library (ESM + CJS + types)
+        run: npm run build
+
+      - name: Verify dist artifacts
+        run: |
+          test -f dist/index.mjs || { echo "ESM manquant" ; exit 1; }
+          test -f dist/index.js  || { echo "CJS manquant" ; exit 1; }
+          test -f dist/index.d.ts || { echo "Types manquants" ; exit 1; }
+          echo "dist OK — publication..."
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

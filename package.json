@@ -1,5 +1,5 @@
 {
-  "name": "form-engine",
+  "name": "@ainelo/form-engine",
   "version": "1.0.3",
   "description": "React form generation library — conditional display, multi-step pagination, OTP, file upload, repeat groups",
   "author": {

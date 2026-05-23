@@ -1,0 +1,543 @@
+# @ainelo/form-engine — LLM Reference
+
+React library for generating forms from a JSON structure. It handles conditional display, multi-step pagination, OTP verification, file uploads, repeat groups, and multilingual labels.
+
+## Installation
+
+```bash
+npm install @ainelo/form-engine
+```
+
+## Basic usage
+
+```tsx
+import { FormEngine } from "@ainelo/form-engine";
+
+<FormEngine
+  form={formStructure}
+  formId="my-form"
+  onSubmit={(data) => console.log(data)}
+  currentLang="fr"
+  submitButtonText="Valider"
+  paginationMode="bySection"
+/>
+```
+
+---
+
+## FormEngine props
+
+| Prop | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `form` | `FormStructure` | yes | — | Complete form definition |
+| `formId` | `string` | yes | — | Unique identifier for this form instance (used for persistence) |
+| `onSubmit` | `(data: Record<string, any>) => void` | yes | — | Called when the form is submitted and valid |
+| `currentLang` | `string` | no | `"fr"` | Active language code for multilingual labels |
+| `submitButtonText` | `string` | no | `"Continuer"` | Label of the submit/next button |
+| `paginationMode` | `"byFields" \| "bySection"` | no | `"byFields"` | Overrides `form.layoutOptions.paginationMode`. `"byFields"` groups fields N per page; `"bySection"` shows one section per page |
+
+---
+
+## FormStructure
+
+The `form` prop is a `FormStructure` object:
+
+```ts
+{
+  name: string;           // Form name
+  provider: string;       // Author / provider
+  description: string;    // General description
+  status: "ACTIVE" | "INACTIVE";
+  isDeclaration: number;  // 1 = official declaration, 0 = standard
+  isTest: number;         // 1 = test form, 0 = production
+  version?: string;
+  createdAt?: string;     // ISO date
+  updatedAt?: string;     // ISO date
+  sections: Section[];
+  theme?: FormTheme;
+  layoutOptions?: FormEngineLayoutOptions;
+}
+```
+
+### FormTheme
+
+```ts
+{
+  primaryColor?: string;  // Hex color, e.g. "#008080"
+}
+```
+
+### FormEngineLayoutOptions
+
+```ts
+{
+  paginationMode?: "byFields" | "bySection";
+  progressBarType?: ProgressBarType;
+  headerOptions?: HeaderOptions;
+  displayDeleteButton?: boolean;   // Show "clear all" button (default: true)
+  containerStyles?: ContainerStylesOptions;
+}
+```
+
+#### ProgressBarType
+
+```ts
+{
+  type: "default_step" | "custom" | "pastel" | "linear" | "section_bubble" | "section_bubble_pastel";
+  colors?: {
+    background: string;  // e.g. "#e5e7eb"
+    foreground: string;  // e.g. "#008080"
+  };
+  visible?: boolean;
+}
+```
+
+#### HeaderOptions
+
+```ts
+{
+  visible?: boolean;
+  type: "default" | "custom";
+  customHeader?: React.ReactNode;  // Used only when type === "custom"
+}
+```
+
+#### ContainerStylesOptions
+
+```ts
+{
+  mainContainer?: ContainerStyles;    // Outer container (sections + buttons)
+  sectionContainer?: ContainerStyles; // Inner container (each section)
+}
+
+// ContainerStyles
+{
+  borderColor?: string;        // e.g. "#e5e7eb"
+  borderWidth?: string | number; // e.g. "2px" or 2
+  backgroundColor?: string;    // e.g. "#ffffff"
+}
+```
+
+---
+
+## Section
+
+A `Section` groups form fields and can be conditionally displayed:
+
+```ts
+{
+  sectionId: string;
+  title?: string | { [lang: string]: string } | null;
+  subTitle?: string | { [lang: string]: string } | null;
+  isSpacer?: string;           // Visual separator hint
+  position?: number;           // Display order
+  formFields: FormField[];
+  conditionalDisplay?: ConditionalDisplayGroup;
+}
+```
+
+---
+
+## FormField
+
+Each field in `section.formFields`:
+
+```ts
+{
+  formFieldId: string;        // Unique ID (UUID)
+  fieldName: string;          // Technical key — used as the key in onSubmit data
+  slug?: string;              // Human-readable key for URLs / UI
+  fieldType: FieldType;       // See field types below
+  label: string | { [lang: string]: string };
+  response: ResponseInForm;   // Initial / default value
+  selectOptions?: SelectOption[];
+  validations?: ValidationRule[];
+  position?: number;
+  placeholder?: string | { [lang: string]: string };
+  tooltip?: string | { [lang: string]: string };
+  helpText?: string | { [lang: string]: string };
+  example?: string | { [lang: string]: string };
+  enableSearch?: boolean;              // Enable search in dropdown
+  width?: "full" | "half";            // "full" = 100%, "half" = 50% (tablet+)
+  conditionalDisplay?: ConditionalDisplayGroup;
+  repeatGroup?: FormRepeatGroup;
+  repeatRule?: RepeatRule;
+  fileToBucketManage?: FileToBucketManage;
+  otpFormFieldExecOptions?: OTPFormFieldExecOptions;
+  emailFormFieldExecOptions?: EmailFormFieldExecOptions;
+  detailInfos?: DetailInfosConfig;
+  dynamicFilterRule?: DynamicFilterRule;
+  flattenOnSubmit?: boolean;           // Flatten field in final JSON (default: true for OTP)
+}
+```
+
+### Field types (fieldType)
+
+| Value | Description |
+|-------|-------------|
+| `"text"` | Single-line text input |
+| `"textarea"` | Multi-line text input |
+| `"dropdown"` | Select dropdown (requires `selectOptions`) |
+| `"radio"` | Radio buttons (requires `selectOptions`) |
+| `"checkbox"` | Checkboxes (requires `selectOptions`) |
+| `"date"` | Date picker |
+| `"number"` | Numeric input |
+| `"bool"` | Toggle / switch |
+| `"file"` | Generic file upload |
+| `"password"` | Password input |
+| `"IMAGE"` | Image upload |
+| `"VIDEO"` | Video upload |
+| `"AUDIO"` | Audio upload |
+| `"DOCUMENT"` | Document upload |
+| `"PDF"` | PDF upload |
+| `"VOICE"` | Voice recording |
+| `"TIP_TAP_DOC_TEXT"` | Rich text editor (TipTap) |
+| `"OTP"` | One-time password field (requires `otpFormFieldExecOptions`) |
+
+### ResponseInForm (initial value)
+
+```ts
+{
+  responseValue: string | string[] | number | number[] | boolean | File | File[] | null;
+}
+```
+
+---
+
+## SelectOption
+
+Used in `dropdown`, `radio`, `checkbox` fields:
+
+```ts
+{
+  value: string;
+  label: string | { [lang: string]: string };
+  points?: number;   // Score / weight
+  icon?: string;     // Icon name or URL
+}
+```
+
+---
+
+## ValidationRule
+
+```ts
+{
+  validationType?: ValidationType;
+  value?: number | string | string[];   // Param for the rule (e.g. min length value)
+  errMsg: string;                        // Error message shown to user
+}
+```
+
+### ValidationType values
+
+| Value | Description |
+|-------|-------------|
+| `"required"` | Field must not be empty |
+| `"minLength"` | Minimum character count (`value`: number) |
+| `"maxLength"` | Maximum character count (`value`: number) |
+| `"regex"` | Must match pattern (`value`: string) |
+| `"email"` | Must be a valid email |
+| `"number"` | Must be a valid number |
+| `"fileSize"` | Max file size in bytes (`value`: number) |
+| `"phone_number"` | Must be a valid phone number |
+| `"fileType"` | Allowed MIME types (`value`: string[]) |
+
+---
+
+## ConditionalDisplayGroup
+
+Controls visibility of a section or field based on other field values:
+
+```ts
+{
+  rules: ConditionalDisplayRule | ConditionalDisplayRule[];
+  logic?: "AND" | "OR";  // How to combine multiple rules (default: "AND")
+}
+```
+
+### ConditionalDisplayRule
+
+```ts
+{
+  fieldName?: string | string[];      // Target field(s) by technical key
+  formFieldId?: string | string[];    // Target field(s) by UUID
+  operator?: ConditionalOperator;
+  value?: string | number | boolean | string[] | number[];
+  numeric_compare_to?: number;        // For numeric aggregation comparisons
+  typeComputation?: "SOMME" | "MULTIPLICATION"; // Aggregate multiple field values
+}
+```
+
+### ConditionalOperator values
+
+`"=="` | `"!="` | `">"` | `"<"` | `"IN"` | `"NOT IN"` | `"CONTAINS"` | `"NOT CONTAINS"`
+
+**Example — show a field only when another field equals "yes":**
+```ts
+conditionalDisplay: {
+  rules: { fieldName: "has_vehicle", operator: "==", value: "yes" },
+  logic: "AND"
+}
+```
+
+---
+
+## FormRepeatGroup
+
+A group of fields that can be repeated (e.g. list of persons):
+
+```ts
+{
+  repeatGroupId: string;
+  fieldName: string;
+  label: string | { [lang: string]: string };
+  minRepeats?: number;
+  maxRepeats?: number;
+  initialRepeats?: number;
+  formFields: FormField[];
+  position?: number;
+  conditionalDisplay?: ConditionalDisplayGroup;
+}
+```
+
+### RepeatRule (on a FormField)
+
+```ts
+{
+  max?: number;
+  min?: number;
+  prefillEmpty?: boolean;  // Pre-fill one empty instance on initial render
+}
+```
+
+---
+
+## OTPFormFieldExecOptions
+
+Required when `fieldType === "OTP"`:
+
+```ts
+{
+  serverDns: string;              // e.g. "https://api.example.com"
+  postApiEndPoint: string;        // e.g. "/api/otp/verify"
+  payload?: Record<string, any>;
+  extraHeaders?: Record<string, string>;
+  bearer?: string;
+  timeoutMs?: number;
+  otpLength?: number;             // Number of digits (default: 6)
+  linkedEmailFieldName?: string;  // fieldName of the email field that triggers OTP send
+  sendOTPApiConfig?: {            // Config for initial OTP send (if different from verify)
+    serverDns: string;
+    postApiEndPoint: string;
+    payload?: Record<string, any>;
+    extraHeaders?: Record<string, string>;
+    bearer?: string;
+  };
+  autoValidate?: boolean;         // Auto-submit when all digits filled (default: false)
+  enableResend?: boolean;         // Show "Resend code" button (default: true)
+  resendCooldownSeconds?: number; // Min seconds between sends (default: 60)
+}
+```
+
+---
+
+## EmailFormFieldExecOptions
+
+On a `"text"` field with an email validation, to trigger OTP send automatically:
+
+```ts
+{
+  triggerOTPSend?: boolean;
+  linkedOTPFieldName?: string;
+  otpSendApiConfig?: {
+    serverDns: string;
+    postApiEndPoint: string;
+    payload?: Record<string, any>;
+    extraHeaders?: Record<string, string>;
+    bearer?: string;
+  };
+}
+```
+
+---
+
+## FileToBucketManage
+
+On file fields (`"file"`, `"IMAGE"`, `"VIDEO"`, etc.) to upload/delete via a bucket API:
+
+```ts
+{
+  uploadOption: UploadOption;
+  deleteOption: DeleteOption;
+}
+
+// UploadOption
+{
+  serverDns: string;
+  postApiEndPoint: string;   // e.g. "/api/files/upload-file"
+  payload?: Record<string, unknown>;
+  bearer?: string;
+  extraHeaders?: Record<string, string>;
+  timeoutMs?: number;
+  onResponse?(response: Response): Promise<void>;
+}
+
+// DeleteOption
+{
+  serverDns: string;
+  deleteApiEndPoint: string; // e.g. "/api/files/delete-file"
+  payload?: Record<string, unknown>;
+  bearer?: string;
+  extraHeaders?: Record<string, string>;
+  timeoutMs?: number;
+  onResponse?(response: Response): Promise<void>;
+}
+```
+
+---
+
+## DetailInfosConfig
+
+Dynamically generate extra fields when a specific option is selected in `dropdown`, `radio`, or `checkbox`:
+
+```ts
+// On FormField.detailInfos
+{
+  [optionValue: string]: {
+    formFields: FormField[];
+    label?: string | { [lang: string]: string };
+  };
+}
+```
+
+**Example — show extra fields when "other" is selected:**
+```ts
+detailInfos: {
+  "other": {
+    label: "Précisez",
+    formFields: [
+      {
+        formFieldId: "detail-1",
+        fieldName: "other_detail",
+        fieldType: "text",
+        label: "Précision",
+        response: { responseValue: "" }
+      }
+    ]
+  }
+}
+```
+
+---
+
+## DynamicFilterRule
+
+Filter a dropdown's options based on another field's value:
+
+```ts
+{
+  dependentFieldName: string;              // fieldName of the field this depends on
+  filterType: "exact" | "hierarchical";
+  dataSource: {
+    type: "static" | "external";
+    data: Record<string, { value: string; label: string | { [lang: string]: string } }[]>;
+    endpoint?: string;                     // For external data source
+  };
+  transform?: {
+    valueKey: string;
+    labelKey: string;
+  };
+}
+```
+
+---
+
+## Full minimal example
+
+```tsx
+import { FormEngine } from "@ainelo/form-engine";
+import type { FormStructure } from "@ainelo/form-engine";
+
+const form: FormStructure = {
+  name: "Contact",
+  provider: "Sublime World",
+  description: "Simple contact form",
+  status: "ACTIVE",
+  isDeclaration: 0,
+  isTest: 0,
+  theme: { primaryColor: "#008080" },
+  layoutOptions: {
+    paginationMode: "bySection",
+    progressBarType: { type: "linear", visible: true },
+    displayDeleteButton: false,
+  },
+  sections: [
+    {
+      sectionId: "section-1",
+      title: "Vos informations",
+      formFields: [
+        {
+          formFieldId: "f-name",
+          fieldName: "full_name",
+          fieldType: "text",
+          label: { fr: "Nom complet", en: "Full name" },
+          response: { responseValue: "" },
+          validations: [
+            { validationType: "required", errMsg: "Le nom est requis" },
+            { validationType: "minLength", value: 2, errMsg: "Minimum 2 caractères" }
+          ],
+          width: "half",
+        },
+        {
+          formFieldId: "f-email",
+          fieldName: "email",
+          fieldType: "text",
+          label: { fr: "Email", en: "Email" },
+          response: { responseValue: "" },
+          validations: [
+            { validationType: "required", errMsg: "L'email est requis" },
+            { validationType: "email", errMsg: "Email invalide" }
+          ],
+          width: "half",
+        },
+        {
+          formFieldId: "f-subject",
+          fieldName: "subject",
+          fieldType: "dropdown",
+          label: "Sujet",
+          response: { responseValue: "" },
+          selectOptions: [
+            { value: "info", label: "Information" },
+            { value: "support", label: "Support" },
+            { value: "other", label: "Autre" },
+          ],
+        },
+        {
+          formFieldId: "f-message",
+          fieldName: "message",
+          fieldType: "textarea",
+          label: "Message",
+          response: { responseValue: "" },
+          validations: [{ validationType: "required", errMsg: "Le message est requis" }],
+          conditionalDisplay: {
+            rules: { fieldName: "subject", operator: "!=", value: "" },
+          },
+        },
+      ],
+    },
+  ],
+};
+
+export default function App() {
+  return (
+    <FormEngine
+      form={form}
+      formId="contact-form"
+      onSubmit={(data) => console.log("Submitted:", data)}
+      currentLang="fr"
+      submitButtonText="Envoyer"
+    />
+  );
+}
+```

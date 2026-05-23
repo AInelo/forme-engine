@@ -20,6 +20,9 @@ jobs:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Remove deprecated always-auth from npmrc
+        run: npm config delete always-auth 2>/dev/null || true
+
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 

@@ -13,6 +13,28 @@
 
 ---
 
+## Why `@ainelo/form-engine`?
+
+Most React form libraries give you primitives — you still wire validation, conditionals, multi-step logic, file uploads, and OTP flows yourself. `@ainelo/form-engine` is the only library in the React ecosystem that combines all of the following **out of the box**, with zero boilerplate:
+
+| Feature | react-hook-form | Formik | RJSF | **form-engine** |
+|---|:---:|:---:|:---:|:---:|
+| JSON-driven rendering | ❌ | ❌ | ✅ | ✅ |
+| Conditional display (AND/OR/computed) | ❌ | ❌ | ⚠️ | ✅ |
+| Multi-step + progress bar | ❌ | ❌ | ❌ | ✅ |
+| Repeat groups (dynamic arrays) | ❌ | ❌ | ✅ | ✅ |
+| OTP flow (send + verify + resend) | ❌ | ❌ | ❌ | ✅ |
+| File-to-bucket upload/delete | ❌ | ❌ | ❌ | ✅ |
+| Cascading dropdowns | ❌ | ❌ | ❌ | ✅ |
+| Multilingual labels | ❌ | ❌ | ⚠️ | ✅ |
+| Radix UI + Tailwind (shadcn-compatible) | ❌ | ❌ | ❌ | ✅ |
+| Zod validation (auto-generated) | ❌ | ❌ | ❌ | ✅ |
+| Draft persistence (Zustand) | ❌ | ❌ | ❌ | ✅ |
+
+**The sweet spot:** if your stack is React + Zod + Radix UI + Tailwind (the modern default), `@ainelo/form-engine` plugs in natively and eliminates weeks of form infrastructure work.
+
+---
+
 ## Overview
 
 `@ainelo/form-engine` lets you describe a form as a **plain JSON object** and render it as a fully functional, validated, multi-step React form. No boilerplate. No manual `useState` for every field. You define the structure — the engine handles the rest.
@@ -595,6 +617,248 @@ The `onSubmit` callback receives a flat `Record<string, any>` where each key is 
     { passenger_name: "Carol", passenger_age: 28 },
   ],
   id_document: "https://bucket.example.com/files/doc-abc123.pdf",
+}
+```
+
+---
+
+## Complete real-world example
+
+A 3-step registration form with:
+- **Step 1** — identity (text + email + OTP verification)
+- **Step 2** — profile (dropdown + conditional field + cascading dropdown)
+- **Step 3** — passengers (repeat group, 1–5 entries)
+
+```tsx
+import { FormEngine } from "@ainelo/form-engine";
+import type { FormStructure } from "@ainelo/form-engine";
+
+const registrationForm: FormStructure = {
+  name: "Registration",
+  provider: "Acme Corp",
+  description: "Multi-step registration with OTP and repeat group",
+  status: "ACTIVE",
+  isDeclaration: 0,
+  isTest: 0,
+  theme: { primaryColor: "#6366f1" },
+  layoutOptions: {
+    paginationMode: "bySection",
+    progressBarType: { type: "linear", visible: true },
+    displayDeleteButton: false,
+  },
+  sections: [
+    // ── Step 1 — Identity + OTP ──────────────────────────────────────
+    {
+      sectionId: "s-identity",
+      title: { fr: "Votre identité", en: "Your identity" },
+      formFields: [
+        {
+          formFieldId: "f-firstname",
+          fieldName: "first_name",
+          fieldType: "text",
+          label: { fr: "Prénom", en: "First name" },
+          response: { responseValue: "" },
+          width: "half",
+          validations: [{ validationType: "required", errMsg: "Requis" }],
+        },
+        {
+          formFieldId: "f-lastname",
+          fieldName: "last_name",
+          fieldType: "text",
+          label: { fr: "Nom", en: "Last name" },
+          response: { responseValue: "" },
+          width: "half",
+          validations: [{ validationType: "required", errMsg: "Requis" }],
+        },
+        {
+          formFieldId: "f-email",
+          fieldName: "email",
+          fieldType: "text",
+          label: "Email",
+          response: { responseValue: "" },
+          validations: [
+            { validationType: "required", errMsg: "Requis" },
+            { validationType: "email", errMsg: "Email invalide" },
+          ],
+          // Triggers OTP send automatically when a valid email is entered
+          emailFormFieldExecOptions: {
+            triggerOTPSend: true,
+            linkedOTPFieldName: "otp_code",
+            otpSendApiConfig: {
+              serverDns: "https://api.example.com",
+              postApiEndPoint: "/api/otp/send",
+            },
+          },
+        },
+        {
+          formFieldId: "f-otp",
+          fieldName: "otp_code",
+          fieldType: "OTP",
+          label: { fr: "Code de vérification (6 chiffres)", en: "Verification code (6 digits)" },
+          response: { responseValue: "" },
+          otpFormFieldExecOptions: {
+            serverDns: "https://api.example.com",
+            postApiEndPoint: "/api/otp/verify",
+            otpLength: 6,
+            linkedEmailFieldName: "email",
+            autoValidate: true,
+            enableResend: true,
+            resendCooldownSeconds: 60,
+          },
+        },
+      ],
+    },
+
+    // ── Step 2 — Profile (conditional + cascading) ───────────────────
+    {
+      sectionId: "s-profile",
+      title: { fr: "Votre profil", en: "Your profile" },
+      formFields: [
+        {
+          formFieldId: "f-country",
+          fieldName: "country",
+          fieldType: "dropdown",
+          label: { fr: "Pays", en: "Country" },
+          response: { responseValue: "" },
+          enableSearch: true,
+          selectOptions: [
+            { value: "FR", label: { fr: "France", en: "France" } },
+            { value: "BE", label: { fr: "Belgique", en: "Belgium" } },
+            { value: "CI", label: { fr: "Côte d'Ivoire", en: "Ivory Coast" } },
+          ],
+          validations: [{ validationType: "required", errMsg: "Requis" }],
+        },
+        {
+          // City options change dynamically based on selected country
+          formFieldId: "f-city",
+          fieldName: "city",
+          fieldType: "dropdown",
+          label: { fr: "Ville", en: "City" },
+          response: { responseValue: "" },
+          dynamicFilterRule: {
+            dependentFieldName: "country",
+            filterType: "exact",
+            dataSource: {
+              type: "static",
+              data: {
+                FR: [{ value: "paris", label: "Paris" }, { value: "lyon", label: "Lyon" }],
+                BE: [{ value: "bruxelles", label: "Bruxelles" }, { value: "liege", label: "Liège" }],
+                CI: [{ value: "abidjan", label: "Abidjan" }, { value: "bouake", label: "Bouaké" }],
+              },
+            },
+          },
+        },
+        {
+          formFieldId: "f-sector",
+          fieldName: "sector",
+          fieldType: "dropdown",
+          label: { fr: "Secteur d'activité", en: "Business sector" },
+          response: { responseValue: "" },
+          selectOptions: [
+            { value: "agri", label: { fr: "Agriculture", en: "Agriculture" } },
+            { value: "tech", label: "Tech" },
+            { value: "other", label: { fr: "Autre", en: "Other" } },
+          ],
+          // Reveals a free-text field when "Autre" is selected
+          detailInfos: {
+            other: {
+              label: { fr: "Précisez", en: "Specify" },
+              formFields: [
+                {
+                  formFieldId: "f-sector-detail",
+                  fieldName: "sector_detail",
+                  fieldType: "text",
+                  label: { fr: "Secteur exact", en: "Exact sector" },
+                  response: { responseValue: "" },
+                },
+              ],
+            },
+          },
+        },
+      ],
+    },
+
+    // ── Step 3 — Passengers (repeat group) ───────────────────────────
+    {
+      sectionId: "s-passengers",
+      title: { fr: "Passagers", en: "Passengers" },
+      formFields: [
+        {
+          formFieldId: "f-passengers",
+          fieldName: "passengers",
+          fieldType: "text",
+          label: { fr: "Passagers", en: "Passengers" },
+          response: { responseValue: "" },
+          repeatGroup: {
+            repeatGroupId: "rg-passengers",
+            fieldName: "passengers",
+            label: { fr: "Passager", en: "Passenger" },
+            minRepeats: 1,
+            maxRepeats: 5,
+            initialRepeats: 1,
+            formFields: [
+              {
+                formFieldId: "f-p-name",
+                fieldName: "passenger_name",
+                fieldType: "text",
+                label: { fr: "Nom complet", en: "Full name" },
+                response: { responseValue: "" },
+                width: "half",
+                validations: [{ validationType: "required", errMsg: "Requis" }],
+              },
+              {
+                formFieldId: "f-p-age",
+                fieldName: "passenger_age",
+                fieldType: "number",
+                label: { fr: "Âge", en: "Age" },
+                response: { responseValue: "" },
+                width: "half",
+                validations: [{ validationType: "required", errMsg: "Requis" }],
+              },
+              {
+                formFieldId: "f-p-passport",
+                fieldName: "passport_scan",
+                fieldType: "PDF",
+                label: { fr: "Scan passeport", en: "Passport scan" },
+                response: { responseValue: "" },
+                fileToBucketManage: {
+                  uploadOption: {
+                    serverDns: "https://bucket.example.com",
+                    postApiEndPoint: "/api/files/upload-file",
+                    payload: { folder_name: "passports" },
+                    bearer: "my-token",
+                  },
+                  deleteOption: {
+                    serverDns: "https://bucket.example.com",
+                    deleteApiEndPoint: "/api/files/delete-file",
+                    payload: { folder_name: "passports" },
+                  },
+                },
+              },
+            ],
+          },
+          repeatRule: { min: 1, max: 5, prefillEmpty: true },
+        },
+      ],
+    },
+  ],
+};
+
+export default function RegistrationPage() {
+  return (
+    <FormEngine
+      form={registrationForm}
+      formId="registration-2024"
+      currentLang="fr"
+      submitButtonText="Suivant"
+      onSubmit={(data) => {
+        // data.first_name, data.last_name, data.email
+        // data.country, data.city, data.sector, data.sector_detail?
+        // data.passengers: [{ passenger_name, passenger_age, passport_scan }]
+        console.log(data);
+      }}
+    />
+  );
 }
 ```
 

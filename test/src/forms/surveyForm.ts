@@ -1,4 +1,4 @@
-import type { FormStructure } from 'form-engine';
+import type { FormStructure } from 'forme-engine';
 
 export const surveyForm: FormStructure = {
   name: "Enquête de satisfaction",

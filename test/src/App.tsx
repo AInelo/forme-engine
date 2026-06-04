@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Toaster } from 'react-hot-toast';
-import { FormEngine } from 'form-engine';
+import { FormEngine } from 'forme-engine';
 import JsonModal from './components/JsonModal';
 import { allForms, type FormEntry } from './forms';
 
@@ -24,7 +24,7 @@ export default function App() {
               <span className="text-white text-xs font-bold">FE</span>
             </div>
             <div>
-              <span className="font-semibold text-gray-800 text-sm">form-engine</span>
+              <span className="font-semibold text-gray-800 text-sm">forme-engine</span>
               <span className="ml-1.5 text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">v0.1.0</span>
             </div>
           </div>

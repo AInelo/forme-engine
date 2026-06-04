@@ -1,11 +1,11 @@
 <div align="center">
 
-# `@ainelo/form-engine`
+# `forme-engine`
 
 **A powerful, JSON-driven React form engine** — conditional logic, multi-step pagination, OTP, file uploads, repeat groups, multilingual labels, and more. Build complex forms without writing form code.
 
-[![npm version](https://img.shields.io/npm/v/@ainelo/form-engine?color=teal&style=flat-square)](https://www.npmjs.com/package/@ainelo/form-engine)
-[![license](https://img.shields.io/npm/l/@ainelo/form-engine?style=flat-square)](./LICENSE)
+[![npm version](https://img.shields.io/npm/v/forme-engine?color=teal&style=flat-square)](https://www.npmjs.com/package/forme-engine)
+[![license](https://img.shields.io/npm/l/forme-engine?style=flat-square)](./LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18+-61DAFB?style=flat-square&logo=react)](https://react.dev/)
 
@@ -13,9 +13,9 @@
 
 ---
 
-## Why `@ainelo/form-engine`?
+## Why `forme-engine`?
 
-Most React form libraries give you primitives — you still wire validation, conditionals, multi-step logic, file uploads, and OTP flows yourself. `@ainelo/form-engine` is the only library in the React ecosystem that combines all of the following **out of the box**, with zero boilerplate:
+Most React form libraries give you primitives — you still wire validation, conditionals, multi-step logic, file uploads, and OTP flows yourself. `forme-engine` is the only library in the React ecosystem that combines all of the following **out of the box**, with zero boilerplate:
 
 | Feature | react-hook-form | Formik | RJSF | **form-engine** |
 |---|:---:|:---:|:---:|:---:|
@@ -31,13 +31,13 @@ Most React form libraries give you primitives — you still wire validation, con
 | Zod validation (auto-generated) | ❌ | ❌ | ❌ | ✅ |
 | Draft persistence (Zustand) | ❌ | ❌ | ❌ | ✅ |
 
-**The sweet spot:** if your stack is React + Zod + Radix UI + Tailwind (the modern default), `@ainelo/form-engine` plugs in natively and eliminates weeks of form infrastructure work.
+**The sweet spot:** if your stack is React + Zod + Radix UI + Tailwind (the modern default), `forme-engine` plugs in natively and eliminates weeks of form infrastructure work.
 
 ---
 
 ## Overview
 
-`@ainelo/form-engine` lets you describe a form as a **plain JSON object** and render it as a fully functional, validated, multi-step React form. No boilerplate. No manual `useState` for every field. You define the structure — the engine handles the rest.
+`forme-engine` lets you describe a form as a **plain JSON object** and render it as a fully functional, validated, multi-step React form. No boilerplate. No manual `useState` for every field. You define the structure — the engine handles the rest.
 
 **Key capabilities:**
 
@@ -59,7 +59,7 @@ Most React form libraries give you primitives — you still wire validation, con
 ## Installation
 
 ```bash
-npm install @ainelo/form-engine
+npm install forme-engine
 ```
 
 ### Peer dependencies
@@ -77,8 +77,8 @@ npm install react react-dom react-hook-form zod zustand lucide-react react-hot-t
 ## Quick start
 
 ```tsx
-import { FormEngine } from "@ainelo/form-engine";
-import type { FormStructure } from "@ainelo/form-engine";
+import { FormEngine } from "forme-engine";
+import type { FormStructure } from "forme-engine";
 
 const form: FormStructure = {
   name: "Contact",
@@ -630,8 +630,8 @@ A 3-step registration form with:
 - **Step 3** — passengers (repeat group, 1–5 entries)
 
 ```tsx
-import { FormEngine } from "@ainelo/form-engine";
-import type { FormStructure } from "@ainelo/form-engine";
+import { FormEngine } from "forme-engine";
+import type { FormStructure } from "forme-engine";
 
 const registrationForm: FormStructure = {
   name: "Registration",

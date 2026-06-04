@@ -1,4 +1,4 @@
-import type { FormStructure } from 'form-engine';
+import type { FormStructure } from 'forme-engine';
 
 export const conditionalForm: FormStructure = {
   name: "Affichage conditionnel",

@@ -1,4 +1,4 @@
-import type { FormStructure } from 'form-engine';
+import type { FormStructure } from 'forme-engine';
 import { registrationForm } from './registrationForm';
 import { surveyForm } from './surveyForm';
 import { conditionalForm } from './conditionalForm';

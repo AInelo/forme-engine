@@ -34,6 +34,8 @@ const FormEngine: React.FC<FormEngineProps> = ({
   const displayDeleteButton = form.layoutOptions?.displayDeleteButton ?? true;
   // Extraire containerStyles depuis form.layoutOptions
   const containerStyles = form.layoutOptions?.containerStyles;
+  // Extraire mobileNavSticky depuis form.layoutOptions (défaut: true pour rétrocompatibilité)
+  const mobileNavSticky = form.layoutOptions?.mobileNavSticky ?? true;
   // Récupération des valeurs du formulaire pour calculer la visibilité
   const rawFormValues = useFormStore((state) => state.forms[formId]);
   const formValues = useMemo(() => rawFormValues ?? {}, [rawFormValues]);
@@ -153,7 +155,7 @@ const FormEngine: React.FC<FormEngineProps> = ({
       <form
         key={formKey}
         onSubmit={(e) => e.preventDefault()}
-        className="h-full w-full laptop:w-[90%] flex flex-col items-center justify-center bg-white"
+        className="h-full w-full lg:w-[90%] flex flex-col items-center justify-center bg-white"
         style={themeVars}
       >
         <FormEngineContent
@@ -173,6 +175,7 @@ const FormEngine: React.FC<FormEngineProps> = ({
           headerOptions={headerOptions}
           displayDeleteButton={displayDeleteButton}
           containerStyles={containerStyles}
+          mobileNavSticky={mobileNavSticky}
         />
       </form>
     </FormProvider>

@@ -47,4 +47,5 @@ export interface FormEngineContentProps {
   headerOptions?: HeaderOptions;
   displayDeleteButton?: boolean;
   containerStyles?: ContainerStylesOptions;
+  mobileNavSticky?: boolean;
 }

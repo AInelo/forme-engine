@@ -76,8 +76,11 @@ The `form` prop is a `FormStructure` object:
   headerOptions?: HeaderOptions;
   displayDeleteButton?: boolean;   // Show "clear all" button (default: true)
   containerStyles?: ContainerStylesOptions;
+  mobileNavSticky?: boolean;       // If false, navigation buttons render inline on mobile (same as desktop). Default: true (fixed bottom bar on mobile).
 }
 ```
+
+> **`mobileNavSticky`:** when `true` (default), navigation buttons are fixed to the bottom of the screen on mobile, with a compensating `padding-bottom` on the form container. When `false`, the same inline layout used on desktop is applied at all screen sizes — useful when the form is embedded in a page that already manages scroll, or when the sticky bar would conflict with the host layout.
 
 #### ProgressBarType
 
@@ -91,6 +94,8 @@ The `form` prop is a `FormStructure` object:
   visible?: boolean;
 }
 ```
+
+> **Auto-hide rule:** regardless of `visible`, the progress bar is never rendered when there is only one visible section (or one step). This avoids displaying a meaningless "Section 1 / 1" indicator. No configuration needed — it is automatic.
 
 #### HeaderOptions
 
@@ -158,7 +163,7 @@ Each field in `section.formFields`:
   helpText?: string | { [lang: string]: string };
   example?: string | { [lang: string]: string };
   enableSearch?: boolean;              // Enable search in dropdown
-  width?: "full" | "half";            // "full" = 100%, "half" = 50% (tablet+)
+  width?: "full" | "half";            // Grid layout — see below
   conditionalDisplay?: ConditionalDisplayGroup;
   repeatGroup?: FormRepeatGroup;
   repeatRule?: RepeatRule;
@@ -193,6 +198,30 @@ Each field in `section.formFields`:
 | `"VOICE"` | Voice recording |
 | `"TIP_TAP_DOC_TEXT"` | Rich text editor (TipTap) |
 | `"OTP"` | One-time password field (requires `otpFormFieldExecOptions`) |
+
+### Grid layout — `width`
+
+Fields are rendered inside a **2-column CSS grid** (`grid-cols-2` at `md` breakpoint, single column below).
+
+| `width` value | Behaviour |
+|--------------|-----------|
+| `"half"` (default) | Occupies 1 column — two `"half"` fields placed consecutively share the same row |
+| `"full"` | Spans both columns (`col-span-2`) — always takes the full row width |
+
+**Rules:**
+- Two consecutive `"half"` fields → side by side on `≥ 768px`, stacked on mobile.
+- A lone `"half"` field with no pair → occupies the left column only (right column is empty).
+- `"full"` always breaks to its own row regardless of what precedes it.
+- The `width` property is **not** required; omitting it defaults to `"half"`.
+
+**No extra Tailwind config required** — the lib uses only standard Tailwind breakpoints (`md:`, `lg:`).
+
+**Example — 2 fields side by side then 1 full-width:**
+```ts
+{ fieldName: "prenom", width: "half", ... },  // row 1, col 1
+{ fieldName: "nom",    width: "half", ... },  // row 1, col 2
+{ fieldName: "email",  width: "full", ... },  // row 2, full width
+```
 
 ### ResponseInForm (initial value)
 

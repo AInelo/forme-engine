@@ -557,6 +557,7 @@ export interface FormEngineLayoutOptions {
   headerOptions?: HeaderOptions;
   displayDeleteButton?: boolean;
   containerStyles?: ContainerStylesOptions; // Styles personnalisés pour les conteneurs
+  mobileNavSticky?: boolean; // Si true (défaut), les boutons sont fixés en bas de l'écran sur mobile. Si false, même rendu que sur desktop.
 }
 
 

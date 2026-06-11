@@ -16,6 +16,7 @@ interface FormNavigationProps {
   onSubmitButtonText?: string;
   showStepNavigation?: boolean;
   displayDeleteButton?: boolean; // Contrôle l'affichage du bouton de suppression
+  mobileNavSticky?: boolean; // Si false, même rendu que desktop sur mobile (pas de barre fixée en bas)
 }
 
 const FormNavigation: React.FC<FormNavigationProps> = ({
@@ -30,7 +31,8 @@ const FormNavigation: React.FC<FormNavigationProps> = ({
   isValidating = false,
   onSubmitButtonText,
   showStepNavigation = true,
-  displayDeleteButton = true
+  displayDeleteButton = true,
+  mobileNavSticky = true,
 }) => {
   // Utiliser la navigation intelligente pour "Précédent" (pas de validation nécessaire)
   const handlePrevious = onPreviousVisible || onPrevious;
@@ -159,8 +161,8 @@ const FormNavigation: React.FC<FormNavigationProps> = ({
 
   return (
     <>
-      {/* Version Desktop - normale */}
-      <div className="hidden md:flex justify-between items-center gap-2 mt-8 w-full max-w-2xl">
+      {/* Barre de navigation — desktop toujours, mobile selon mobileNavSticky */}
+      <div className={`${mobileNavSticky ? "hidden md:flex" : "flex"} justify-between items-center gap-2 mt-8 w-full max-w-2xl`}>
         <CancelBtn
           type="button"
           onClick={(e) => {
@@ -210,8 +212,8 @@ const FormNavigation: React.FC<FormNavigationProps> = ({
         )}
       </div>
 
-      {/* Version Mobile - Tab Bar fixée en bas */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 px-4 py-3 shadow-lg z-50 mobile-nav-slide-up">
+      {/* Version Mobile - Tab Bar fixée en bas (uniquement si mobileNavSticky) */}
+      {mobileNavSticky && <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 px-4 py-3 shadow-lg z-50 mobile-nav-slide-up">
         <div className="flex justify-between items-center gap-3 max-w-md mx-auto">
           <CancelBtn
             type="button"
@@ -270,7 +272,7 @@ const FormNavigation: React.FC<FormNavigationProps> = ({
 
         {/* Espace pour les iPhone avec home indicator */}
         <div className="h-safe-area-inset-bottom"></div>
-      </div>
+      </div>}
 
       {/* Modal de confirmation */}
       <DeleteConfirmationModal />

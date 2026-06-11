@@ -28,6 +28,7 @@ const FormEngineContent: React.FC<FormEngineContentProps> = ({
   headerOptions,
   displayDeleteButton = true,
   containerStyles,
+  mobileNavSticky = true,
 }) => {
   // Récupération des valeurs du formulaire
   const rawFormValues = useFormStore((state) => state.forms[formId]);
@@ -164,7 +165,7 @@ const FormEngineContent: React.FC<FormEngineContentProps> = ({
       <FormSyncComponent formId={formId} sections={form.sections} />
 
       <div 
-        className="h-full w-[100%] laptop:w-[90%] flex flex-col items-center justify-center pb-20 md:pb-0"
+        className={`h-full w-[100%] lg:w-[90%] flex flex-col items-center justify-center ${mobileNavSticky ? "pb-20 md:pb-0" : ""}`}
         style={{
           backgroundColor: containerStyles?.mainContainer?.backgroundColor || '#ffffff',
           borderColor: containerStyles?.mainContainer?.borderColor,
@@ -228,6 +229,7 @@ const FormEngineContent: React.FC<FormEngineContentProps> = ({
           onSubmitButtonText={submitButtonText}
           showStepNavigation={navigation.totalSteps > 1}
           displayDeleteButton={displayDeleteButton}
+          mobileNavSticky={mobileNavSticky}
         />
       </div>
     </>

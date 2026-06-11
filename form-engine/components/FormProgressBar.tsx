@@ -13,6 +13,7 @@ interface FormProgressBarProps {
 
 // Sous-composant pour default_step (comportement actuel)
 const DefaultStepProgressBar: React.FC<{ currentStep: number; totalSteps: number }> = ({ currentStep, totalSteps }) => {
+  if (totalSteps <= 1) return null;
   const progress = (currentStep / totalSteps) * 100;
 
   return (
@@ -32,6 +33,7 @@ const DefaultStepProgressBar: React.FC<{ currentStep: number; totalSteps: number
 
 // Sous-composant pour linear (barre simple sans texte)
 const LinearProgressBar: React.FC<{ currentStep: number; totalSteps: number }> = ({ currentStep, totalSteps }) => {
+  if (totalSteps <= 1) return null;
   const progress = (currentStep / totalSteps) * 100;
 
   return (
@@ -48,6 +50,7 @@ const LinearProgressBar: React.FC<{ currentStep: number; totalSteps: number }> =
 
 // Sous-composant pour pastel (barre segmentée avec bordures arrondies)
 const PastelProgressBar: React.FC<{ currentStep: number; totalSteps: number }> = ({ currentStep, totalSteps }) => {
+  if (totalSteps <= 1) return null;
   return (
     <div className="mt-4 w-full max-w-4xl mb-4">
       <div className="flex items-center gap-1.5">
@@ -84,11 +87,12 @@ const PastelProgressBar: React.FC<{ currentStep: number; totalSteps: number }> =
 };
 
 // Sous-composant pour custom
-const CustomProgressBar: React.FC<{ 
-  currentStep: number; 
-  totalSteps: number; 
-  colors?: { background: string; foreground: string } 
+const CustomProgressBar: React.FC<{
+  currentStep: number;
+  totalSteps: number;
+  colors?: { background: string; foreground: string }
 }> = ({ currentStep, totalSteps, colors }) => {
+  if (totalSteps <= 1) return null;
   const progress = (currentStep / totalSteps) * 100;
   
   // Si colors n'est pas défini, utiliser les couleurs par défaut
@@ -139,13 +143,14 @@ const SectionBubbleProgressBar: React.FC<{
   // Si la section actuelle n'est pas visible, utiliser le premier index visible
   const currentVisibleIndex = visibleSectionIndex >= 0 ? visibleSectionIndex : 0;
 
+  if (visibleSections.length <= 1) return null;
+
   return (
     <div className="mt-4 w-full max-w-4xl mb-4">
       <div className="flex items-center justify-center">
         {visibleSections.map((section, index) => {
           const isCompleted = index < currentVisibleIndex;
           const isActive = index === currentVisibleIndex;
-          const isUpcoming = index > currentVisibleIndex;
 
           return (
             <React.Fragment key={section.sectionId || index}>
@@ -155,10 +160,10 @@ const SectionBubbleProgressBar: React.FC<{
                   className={`
                     w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm
                     transition-all duration-300 z-10 relative
-                    ${isCompleted 
-                      ? 'bg-secondary text-white' 
-                      : isActive 
-                      ? 'border-4 border-secondary bg-white text-secondary' 
+                    ${isCompleted
+                      ? 'bg-secondary text-white'
+                      : isActive
+                      ? 'border-4 border-secondary bg-white text-secondary'
                       : 'border-2 border-gray-300 bg-white text-gray-400'
                     }
                   `}
@@ -167,11 +172,11 @@ const SectionBubbleProgressBar: React.FC<{
                 </div>
                 {/* Ligne de connexion */}
                 {index < visibleSections.length - 1 && (
-                  <div 
+                  <div
                     className={`
                       h-1 w-16 transition-all duration-500 -mx-1
-                      ${index < currentVisibleIndex 
-                        ? 'bg-secondary' 
+                      ${index < currentVisibleIndex
+                        ? 'bg-secondary'
                         : 'bg-gray-200'
                       }
                     `}
@@ -212,13 +217,14 @@ const SectionBubblePastelProgressBar: React.FC<{
   // Si la section actuelle n'est pas visible, utiliser le premier index visible
   const currentVisibleIndex = visibleSectionIndex >= 0 ? visibleSectionIndex : 0;
 
+  if (visibleSections.length <= 1) return null;
+
   return (
     <div className="mt-4 w-full max-w-4xl mb-4">
       <div className="flex items-center justify-center">
         {visibleSections.map((section, index) => {
           const isCompleted = index < currentVisibleIndex;
           const isActive = index === currentVisibleIndex;
-          const isUpcoming = index > currentVisibleIndex;
 
           return (
             <React.Fragment key={section.sectionId || index}>
@@ -228,10 +234,10 @@ const SectionBubblePastelProgressBar: React.FC<{
                   className={`
                     w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm
                     transition-all duration-300 z-10 relative
-                    ${isCompleted 
-                      ? 'bg-pink-300 text-white' 
-                      : isActive 
-                      ? 'border-4 border-pink-400 bg-white text-pink-400' 
+                    ${isCompleted
+                      ? 'bg-pink-300 text-white'
+                      : isActive
+                      ? 'border-4 border-pink-400 bg-white text-pink-400'
                       : 'border-2 border-pink-200 bg-white text-pink-300'
                     }
                   `}
@@ -240,11 +246,11 @@ const SectionBubblePastelProgressBar: React.FC<{
                 </div>
                 {/* Ligne de connexion */}
                 {index < visibleSections.length - 1 && (
-                  <div 
+                  <div
                     className={`
                       h-1 w-16 transition-all duration-500 -mx-1
-                      ${index < currentVisibleIndex 
-                        ? 'bg-pink-300' 
+                      ${index < currentVisibleIndex
+                        ? 'bg-pink-300'
                         : 'bg-pink-100'
                       }
                     `}

@@ -7,8 +7,8 @@ const SCREEN_DESKTOP = 2560;
 
 export function useButtonSize() {
   const [width, setWidth] = useState(120);
-  const [height, setHeight] = useState(36);
-  const [borderRadius, setBorderRadius] = useState(16);
+  const [height, setHeight] = useState(24);
+  const [borderRadius, setBorderRadius] = useState(9);
   const [pressed, setPressed] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -19,10 +19,10 @@ export function useButtonSize() {
       const a = (WIDTH_DESKTOP - WIDTH_MOBILE) / (SCREEN_DESKTOP - SCREEN_MOBILE);
       const b = WIDTH_MOBILE - a * SCREEN_MOBILE;
       const w = a * sw + b;
-      const h = w * 0.3;
+      const h = w * 0.20;
       setWidth(w);
       setHeight(h);
-      setBorderRadius(h * (30 / 66));
+      setBorderRadius(h * 0.37);
       setIsMobile(sw < 1024);
     };
     update();

@@ -310,7 +310,7 @@ const FormSection: React.FC<FormSectionProps> = ({
     const width = field.width || "half"; // Par défaut "half" si non spécifiée
     
     if (width === "full") {
-      return "col-span-1 tablet:col-span-2 w-full"; // Full width sur tous les écrans
+      return "col-span-1 md:col-span-2 w-full"; // Full width sur tous les écrans
     } else {
       return "col-span-1 w-full"; // Half width (1 colonne mobile, 2 colonnes tablet+)
     }
@@ -411,7 +411,7 @@ const FormSection: React.FC<FormSectionProps> = ({
     return (
       <div
         key={sectionKey}
-        className="w-full max-w-4xl rounded-lg p-2 tablet:p-8 flex flex-col items-center"
+        className="w-full max-w-4xl rounded-lg p-2 md:p-8 flex flex-col items-center"
         style={{
           borderColor: sectionBorderColor,
           borderWidth: sectionBorderWidth,
@@ -496,7 +496,7 @@ const FormSection: React.FC<FormSectionProps> = ({
   return (
     <div
       key={sectionKey}
-      className="w-full max-w-4xl rounded-lg p-2 tablet:p-8 flex flex-col items-center"
+      className="w-full max-w-4xl rounded-lg p-2 md:p-8 flex flex-col items-center"
       style={{
         borderColor: sectionBorderColor,
         borderWidth: sectionBorderWidth,
@@ -518,7 +518,7 @@ const FormSection: React.FC<FormSectionProps> = ({
         </PContent>
       )}
 
-      <div className="grid grid-cols-1 tablet:grid-cols-2 gap-6 w-full [&_input:not([type='radio']):not([type='checkbox'])]:!w-full [&_textarea]:!w-full [&_select]:!w-full [&_*]:!max-w-full">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full [&_input:not([type='radio']):not([type='checkbox'])]:!w-full [&_textarea]:!w-full [&_select]:!w-full [&_*]:!max-w-full">
         {fieldsWithAutoOtherAndDetails.map((item, index) => {
           // Vérifier si c'est un groupe de détails
           if ('type' in item && item.type === 'detail-group') {
@@ -526,14 +526,14 @@ const FormSection: React.FC<FormSectionProps> = ({
             return (
               <div
                 key={`${fadeKey}_detail-group_${group.optionValue}_${index}`}
-                className="col-span-1 tablet:col-span-2 mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200"
+                className="col-span-1 md:col-span-2 mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200"
               >
                 {group.groupLabel && (
                   <h4 className="font-semibold text-gray-700 mb-3 text-sm">
                     {group.groupLabel}
                   </h4>
                 )}
-                <div className="grid grid-cols-1 tablet:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {group.fields.map((detailField) => (
                     <div
                       key={`${fadeKey}_${detailField.fieldName}_wrapper`}
